@@ -1,0 +1,45 @@
+{
+  "$comment": "Session handling. The SDK never holds a merchant API key: the merchant backend calls POST /payment/{serviceId}/mobile-sdk/session and hands the short-lived mobsdk_ token to the app through a session provider. Tokens live in memory only and never appear in logs, errors, descriptions or bridge payloads.",
+  "provider": {
+    "singleFlight": true,
+    "singleFlightMeaning": "Concurrent requests needing a session share one provider call.",
+    "providerErrorCode": "session_failed",
+    "providerErrorMessage": "Only the error type name; the provider's message is never forwarded.",
+    "integratorCodePassThrough": "A provider may throw a SimPay checkout error with its own code; it is reported unchanged.",
+    "androidToday": "Provider exceptions become internal; concurrent 401s refresh once per request."
+  },
+  "expiry": {
+    "refreshMarginSeconds": 60,
+    "minimumReuseSeconds": 10,
+    "clock": "monotonic",
+    "rules": [
+      "expiresAt is converted to a remaining duration once, when the session is received; afterwards only monotonic time counts, so changing the device clock has no effect.",
+      "A session is refreshed proactively refreshMarginSeconds before it expires.",
+      "A session whose expiresAt is already in the past by the device clock is still used for minimumReuseSeconds, so a wrong device clock cannot cause a provider call per request; the API answers 401 if the token really expired.",
+      "Without expiresAt a session is used until the first 401.",
+      "JWT tokens are never parsed."
+    ],
+    "androidToday": "expiresAt is ignored; refresh only after 401."
+  },
+  "unauthorized": [
+    { "endpoint": "channels", "on401": "replace_session_and_repeat_once", "maxTransportCalls": 2, "maxProviderCalls": 2 },
+    { "endpoint": "transaction_status", "on401": "replace_session_and_repeat_once", "maxTransportCalls": 2, "maxProviderCalls": 2 },
+    { "endpoint": "create_transaction", "on401": "invalidate_session_no_repeat", "maxTransportCalls": 1, "maxProviderCalls": 1, "note": "Repeating a POST after 401 stays disabled until SimPay confirms that 401 guarantees no side effect." },
+    { "endpoint": "submit_blik_code", "on401": "invalidate_session_no_repeat", "maxTransportCalls": 1, "maxProviderCalls": 1 }
+  ],
+  "on403": "No refresh; unauthorized.",
+  "staleUnauthorized": "A 401 answered to an older session never invalidates a newer one.",
+  "bridgeSession": {
+    "cases": [
+      { "name": "token only", "session": { "token": "mobsdk_test_1" }, "expect": "valid" },
+      { "name": "token, expiry and payer IP", "session": { "token": "mobsdk_test_1", "expiresAt": "2026-11-05T12:15:00Z", "payerIp": "203.0.113.10" }, "expect": "valid" },
+      { "name": "fractional seconds and offset", "session": { "token": "mobsdk_test_1", "expiresAt": "2026-11-05T12:15:00.000+01:00" }, "expect": "valid" },
+      { "name": "null expiry", "session": { "token": "mobsdk_test_1", "expiresAt": null }, "expect": "valid" },
+      { "name": "missing token", "session": {}, "expect": "session_failed" },
+      { "name": "blank token", "session": { "token": "" }, "expect": "session_failed" },
+      { "name": "token with a line break", "session": { "token": "mobsdk_test_1\r\nX-Injected: 1" }, "expect": "session_failed" },
+      { "name": "expiry without a time zone", "session": { "token": "mobsdk_test_1", "expiresAt": "2026-11-05T12:15:00" }, "expect": "session_failed" },
+      { "name": "expiry as epoch number", "session": { "token": "mobsdk_test_1", "expiresAt": 1793880900 }, "expect": "session_failed" }
+    ]
+  }
+}

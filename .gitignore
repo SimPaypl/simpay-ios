@@ -1,0 +1,14 @@
+.DS_Store
+/.build
+/Packages
+xcuserdata/
+DerivedData/
+.swiftpm/configuration/registries.json
+.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+.netrc
+
+# Local SimPay API key for the DemoApp API KEY mode (Debug only)
+DemoApp/Config/SimPayDebug.local.xcconfig
+
+# Local build output (xcodebuild -derivedDataPath build/...)
+/build/

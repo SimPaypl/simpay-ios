@@ -1,0 +1,13 @@
+// Base configuration of the SimPayDemo target, Debug only.
+//
+// Optional, git-ignored file with values for the API-key test mode (counterpart of
+// `local.properties` in the Android demo). Copy `SimPayDebug.local.xcconfig.example`
+// to `SimPayDebug.local.xcconfig` and fill it in. Without it the mode stays empty and
+// the key can still be typed in on the tester panel.
+//
+// Release builds never include this file and explicitly blank these settings.
+SIMPAY_DEBUG_SERVICE_ID =
+SIMPAY_DEBUG_API_KEY =
+SIMPAY_DEBUG_PAYER_IP =
+
+#include? "SimPayDebug.local.xcconfig"

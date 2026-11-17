@@ -1,0 +1,169 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)
+// swift-module-flags: -target arm64-apple-ios16.0 -enable-objc-interop -enable-library-evolution -language-mode 6 -O -enable-experimental-feature DebugDescriptionMacro -module-name SimPayCheckoutCore -package-name simpay_ios
+// swift-module-flags-ignorable:  -formal-cxx-interoperability-mode=off -interface-compiler-version 6.4
+import Foundation
+import Swift
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+public struct SimPayTransactionStatusChecker : Swift::Sendable {
+  public init?(serviceID: Swift::String, sessionProvider: any SimPayCheckoutCore::SimPaySessionProvider)
+  public func status(of transactionID: SimPayCheckoutCore::TransactionID) async throws -> SimPayCheckoutCore::SimPayCheckoutResult
+}
+public struct SimPayCheckoutError : Swift::Error, Swift::Sendable, Swift::Hashable, Swift::CustomStringConvertible {
+  public let code: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+  public let message: Swift::String?
+  public init(_ code: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code, message: Swift::String? = nil)
+  public var description: Swift::String {
+    get
+  }
+  public static func == (a: SimPayCheckoutCore::SimPayCheckoutError, b: SimPayCheckoutCore::SimPayCheckoutError) -> Swift::Bool
+  public func hash(into hasher: inout Swift::Hasher)
+  public var hashValue: Swift::Int {
+    get
+  }
+}
+extension SimPayCheckoutCore::SimPayCheckoutError {
+  public struct Code : Swift::RawRepresentable, Swift::Sendable, Swift::Hashable, Swift::CustomStringConvertible {
+    public let rawValue: Swift::String
+    public init(rawValue: Swift::String)
+    public var description: Swift::String {
+      get
+    }
+    public static let noInternet: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let timeout: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let rateLimited: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let secureConnectionFailed: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let serviceUnavailable: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let sessionFailed: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let unauthorized: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let channelsFailed: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let invalidResponse: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let validationFailed: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let transactionNotFound: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let transactionFailed: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let blikRejected: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let outcomeUnknown: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let invalidOrder: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let missingPayerIP: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let missingCountryCode: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let alreadyPresented: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let presentationFailed: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let invalidConfiguration: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let browserUnavailable: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public static let `internal`: SimPayCheckoutCore::SimPayCheckoutError.SimPayCheckoutCore::Code
+    public typealias RawValue = Swift::String
+  }
+}
+public enum SimPayCheckoutResult : Swift::Sendable, Swift::Hashable {
+  case succeeded(transactionID: SimPayCheckoutCore::TransactionID, status: SimPayCheckoutCore::TransactionStatus)
+  case pending(transactionID: SimPayCheckoutCore::TransactionID, status: SimPayCheckoutCore::TransactionStatus?, reason: SimPayCheckoutCore::SimPayCheckoutResult.SimPayCheckoutCore::PendingReason)
+  case failed(SimPayCheckoutCore::SimPayCheckoutError, transactionID: SimPayCheckoutCore::TransactionID?, status: SimPayCheckoutCore::TransactionStatus?)
+  case outcomeUnknown(SimPayCheckoutCore::SimPayCheckoutError)
+  case cancelled
+  public var transactionID: SimPayCheckoutCore::TransactionID? {
+    get
+  }
+  public static func == (a: SimPayCheckoutCore::SimPayCheckoutResult, b: SimPayCheckoutCore::SimPayCheckoutResult) -> Swift::Bool
+  public func hash(into hasher: inout Swift::Hasher)
+  public var hashValue: Swift::Int {
+    get
+  }
+}
+extension SimPayCheckoutCore::SimPayCheckoutResult {
+  public struct PendingReason : Swift::RawRepresentable, Swift::Sendable, Swift::Hashable, Swift::CustomStringConvertible {
+    public let rawValue: Swift::String
+    public init(rawValue: Swift::String)
+    public var description: Swift::String {
+      get
+    }
+    public static let inProgress: SimPayCheckoutCore::SimPayCheckoutResult.SimPayCheckoutCore::PendingReason
+    public static let verificationRequired: SimPayCheckoutCore::SimPayCheckoutResult.SimPayCheckoutCore::PendingReason
+    public static let unrecognizedStatus: SimPayCheckoutCore::SimPayCheckoutResult.SimPayCheckoutCore::PendingReason
+    public static let statusUnavailable: SimPayCheckoutCore::SimPayCheckoutResult.SimPayCheckoutCore::PendingReason
+    public typealias RawValue = Swift::String
+  }
+}
+public struct SimPayOrder : Swift::Sendable {
+  public let amount: Foundation::Decimal
+  public let currency: Swift::String
+  public let transactionDescription: Swift::String?
+  public let control: Swift::String?
+  public let customerEmail: Swift::String
+  public let customerCountryCode: Swift::String?
+  public let returnURLs: SimPayCheckoutCore::SimPayReturnURLs?
+  public let payerIPOverride: Swift::String?
+  public init(amount: Foundation::Decimal, currency: Swift::String = "PLN", transactionDescription: Swift::String? = nil, control: Swift::String? = nil, customerEmail: Swift::String, customerCountryCode: Swift::String? = nil, returnURLs: SimPayCheckoutCore::SimPayReturnURLs? = nil, payerIPOverride: Swift::String? = nil) throws(SimPayCheckoutCore::SimPayCheckoutError)
+}
+extension SimPayCheckoutCore::SimPayOrder : Swift::CustomStringConvertible, Swift::CustomDebugStringConvertible, Swift::CustomReflectable {
+  public var description: Swift::String {
+    get
+  }
+  public var debugDescription: Swift::String {
+    get
+  }
+  public var customMirror: Swift::Mirror {
+    get
+  }
+}
+public struct SimPayReturnURLs : Swift::Sendable, Swift::Hashable {
+  public let success: Foundation::URL
+  public let failure: Foundation::URL
+  public init(success: Foundation::URL, failure: Foundation::URL)
+  public static func == (a: SimPayCheckoutCore::SimPayReturnURLs, b: SimPayCheckoutCore::SimPayReturnURLs) -> Swift::Bool
+  public func hash(into hasher: inout Swift::Hasher)
+  public var hashValue: Swift::Int {
+    get
+  }
+}
+public struct SimPaySession : Swift::Sendable {
+  public let expiresAt: Foundation::Date?
+  public init(token: Swift::String, expiresAt: Foundation::Date? = nil, payerIP: Swift::String? = nil) throws(SimPayCheckoutCore::SimPayCheckoutError)
+}
+extension SimPayCheckoutCore::SimPaySession : Swift::CustomStringConvertible, Swift::CustomDebugStringConvertible, Swift::CustomReflectable {
+  public var description: Swift::String {
+    get
+  }
+  public var debugDescription: Swift::String {
+    get
+  }
+  public var customMirror: Swift::Mirror {
+    get
+  }
+}
+public struct TransactionID : Swift::Sendable, Swift::Hashable, Swift::CustomStringConvertible {
+  public let rawValue: Swift::String
+  public init?(_ rawValue: Swift::String)
+  public var description: Swift::String {
+    get
+  }
+  public static func == (a: SimPayCheckoutCore::TransactionID, b: SimPayCheckoutCore::TransactionID) -> Swift::Bool
+  public func hash(into hasher: inout Swift::Hasher)
+  public var hashValue: Swift::Int {
+    get
+  }
+}
+public struct TransactionStatus : Swift::RawRepresentable, Swift::Sendable, Swift::Hashable, Swift::CustomStringConvertible {
+  public let rawValue: Swift::String
+  public init(rawValue: Swift::String)
+  public var description: Swift::String {
+    get
+  }
+  public static let new: SimPayCheckoutCore::TransactionStatus
+  public static let generated: SimPayCheckoutCore::TransactionStatus
+  public static let confirmed: SimPayCheckoutCore::TransactionStatus
+  public static let paid: SimPayCheckoutCore::TransactionStatus
+  public static let failure: SimPayCheckoutCore::TransactionStatus
+  public static let fraud: SimPayCheckoutCore::TransactionStatus
+  public static let fraudPossibility: SimPayCheckoutCore::TransactionStatus
+  public static let expired: SimPayCheckoutCore::TransactionStatus
+  public static let refunded: SimPayCheckoutCore::TransactionStatus
+  public var isRecognized: Swift::Bool {
+    get
+  }
+  public typealias RawValue = Swift::String
+}
+public protocol SimPaySessionProvider : Swift::Sendable {
+  func provideSession() async throws -> SimPayCheckoutCore::SimPaySession
+}

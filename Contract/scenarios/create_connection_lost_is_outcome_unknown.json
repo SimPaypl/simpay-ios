@@ -1,0 +1,77 @@
+{
+  "id": "create_connection_lost_is_outcome_unknown",
+  "title": "Creation: a connection lost after sending is outcome_unknown",
+  "since": "1.0.0",
+  "covers": [
+    "outcome_unknown",
+    "no_unsafe_post_retry"
+  ],
+  "api": {
+    "channels": [
+      {
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [
+            {
+              "id": "blik-level0",
+              "name": "BLIK Level 0",
+              "type": "blik",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "20000.00"
+              }
+            },
+            {
+              "id": "mbank",
+              "name": "mBank",
+              "type": "transfer",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "50000.00"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "create_transaction": [
+      {
+        "transportFailure": "connection_lost"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "action": "load_channels"
+    },
+    {
+      "action": "select_channel",
+      "channelId": "mbank"
+    },
+    {
+      "action": "select_channel",
+      "channelId": "mbank",
+      "accepted": false
+    }
+  ],
+  "expect": {
+    "result": {
+      "type": "outcome_unknown",
+      "error": {
+        "code": "outcome_unknown"
+      }
+    },
+    "requests": {
+      "create_transaction": 1,
+      "submit_blik_code": 0
+    }
+  },
+  "androidToday": "failed(transaction_failed, retryable=true): the retry button may create a second transaction (P0)."
+}

@@ -1,0 +1,22 @@
+{
+  "$comment": "When a request may be repeated. Failure kinds are produced by api/http-error-mapping.json and api/transport-error-mapping.json. The SDK has no automatic retry loop for any request; 'safeToRepeat' tells callers (the poller, the UI retry button) whether a repetition is allowed at all.",
+  "kinds": [
+    { "kind": "not_delivered", "meaning": "The request provably never reached the server.", "safeToRepeat": true },
+    { "kind": "rejected", "meaning": "The server answered with a definitive refusal; nothing changed.", "safeToRepeat": true, "note": "Repeating only makes sense after the cause is fixed (new session, new code, waiting after 429)." },
+    { "kind": "transient", "meaning": "A read-only request failed temporarily.", "safeToRepeat": true },
+    { "kind": "outcome_unknown", "meaning": "A mutating request may have taken effect.", "safeToRepeat": false }
+  ],
+  "endpoints": [
+    { "endpoint": "channels", "method": "GET", "mutating": false, "automaticRetry": "none (one repeat after a session refresh on 401)", "userRetry": true },
+    { "endpoint": "transaction_status", "method": "GET", "mutating": false, "automaticRetry": "by the poller within its budget", "userRetry": true },
+    { "endpoint": "create_transaction", "method": "POST", "mutating": true, "automaticRetry": "never", "userRetry": "only after not_delivered or rejected", "maxTransportCallsPerAction": 1 },
+    { "endpoint": "submit_blik_code", "method": "POST", "mutating": true, "automaticRetry": "never", "userRetry": "only after not_delivered or rejected (same transaction), or a new code after a rejected code", "maxTransportCallsPerAction": 1 }
+  ],
+  "rules": [
+    "A transport error is not proof that the request was not sent; only failures that prove no connection was made are not_delivered.",
+    "A 2xx answer to POST /transactions without a valid transaction id is outcome_unknown.",
+    "A 2xx answer with a valid id but no usable redirectUrl keeps the transaction; its status is polled.",
+    "Cancelling the caller never abandons a POST already handed to the transport; its outcome is still settled.",
+    "No idempotency key is sent: the SimPay API does not document one. Until it does, outcome_unknown on creation cannot be resolved by the app."
+  ]
+}

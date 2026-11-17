@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # Manual run from the Actions tab; also runs the UI tests of the demo and IntegrationHost.
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # Oldest supported toolchain line (Swift 6.0+). Bump together with README/INTEGRATION.
+  XCODE_APP: /Applications/Xcode_16.4.app
+  NSUnbufferedIO: "YES"
+
+jobs:
+  test:
+    name: Build and test
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s "$XCODE_APP"
+      - name: Safety checks (no logging, no API keys, test hooks only in DEBUG)
+        run: scripts/release-checks.sh
+      - name: Package tests on the iOS simulator (unit, sheet and contract)
+        run: >
+          xcodebuild test -scheme SimPayCheckout
+          -destination "id=$(scripts/pick-simulator.sh)"
+          -derivedDataPath build/sim
+          -resultBundlePath build/PackageTests.xcresult
+          SWIFT_TREAT_WARNINGS_AS_ERRORS=YES
+      - name: Release build without test-only code
+        run: |
+          xcodebuild build -scheme SimPayCheckout -configuration Release \
+            -destination 'generic/platform=iOS' -derivedDataPath build/release CODE_SIGNING_ALLOWED=NO
+          scripts/release-checks.sh build/release/Build/Products
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: package-tests-xcresult
+          path: build/PackageTests.xcresult
+
+  ui-tests:
+    name: UI tests (${{ matrix.app.name }})
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: macos-15
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - { name: DemoApp, project: DemoApp/SimPayDemo.xcodeproj, scheme: SimPayDemo }
+          - { name: IntegrationHost, project: IntegrationHost/SimPayIntegrationHost.xcodeproj, scheme: SimPayIntegrationHost }
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s "$XCODE_APP"
+      - name: UI tests (simulated API, no real payments)
+        run: >
+          xcodebuild test -project ${{ matrix.app.project }} -scheme ${{ matrix.app.scheme }}
+          -configuration Debug -destination "id=$(scripts/pick-simulator.sh)"
+          -derivedDataPath build/ui -resultBundlePath build/UITests.xcresult
+          CODE_SIGNING_ALLOWED=NO
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: ui-tests-${{ matrix.app.name }}-xcresult
+          path: build/UITests.xcresult

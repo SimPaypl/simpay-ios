@@ -1,0 +1,91 @@
+{
+  "id": "redirect_without_url_polls",
+  "title": "Redirect: a created transaction without redirectUrl is kept and polled",
+  "since": "1.0.0",
+  "covers": [
+    "redirect",
+    "results"
+  ],
+  "api": {
+    "channels": [
+      {
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [
+            {
+              "id": "blik-level0",
+              "name": "BLIK Level 0",
+              "type": "blik",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "20000.00"
+              }
+            },
+            {
+              "id": "mbank",
+              "name": "mBank",
+              "type": "transfer",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "50000.00"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "create_transaction": [
+      {
+        "status": 201,
+        "json": {
+          "success": true,
+          "data": {
+            "transactionId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301"
+          }
+        }
+      }
+    ],
+    "transaction_status": [
+      {
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": {
+            "status": "transaction_paid"
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "action": "load_channels"
+    },
+    {
+      "action": "select_channel",
+      "channelId": "mbank"
+    },
+    {
+      "action": "run_polling"
+    }
+  ],
+  "expect": {
+    "result": {
+      "type": "succeeded",
+      "transactionId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301",
+      "status": "transaction_paid"
+    },
+    "requests": {
+      "create_transaction": 1,
+      "submit_blik_code": 0
+    }
+  },
+  "androidToday": "invalid_response; the created transaction is lost."
+}

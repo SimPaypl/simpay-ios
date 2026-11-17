@@ -1,0 +1,27 @@
+{
+  "$comment": "Manifest of the SimPay Mobile SDK functional contract. Platform independent: read by the iOS (Swift Testing) and Android (JUnit) conformance runners and by the future Flutter and React Native adapters. See Contract/README.md for the versioning rules.",
+  "name": "simpay-mobile-contract",
+  "contractVersion": "1.0.0",
+  "bridgeFormatVersion": 1,
+  "status": "draft",
+  "files": {
+    "codes": "codes/codes.json",
+    "statusMapping": "api/status-mapping.json",
+    "httpErrorMapping": "api/http-error-mapping.json",
+    "transportErrorMapping": "api/transport-error-mapping.json",
+    "channelsExample": "api/fixtures/channels-example.json",
+    "orderValidation": "validation/order-validation.json",
+    "amounts": "validation/amounts.json",
+    "session": "policy/session.json",
+    "blik": "policy/blik.json",
+    "polling": "policy/polling.json",
+    "retry": "policy/retry.json",
+    "outcomeUnknown": "policy/outcome-unknown.json",
+    "returnUrls": "policy/return-urls.json",
+    "bridgeExamples": "bridge/bridge-v1-examples.json",
+    "scenarioSchema": "schema/scenario.schema.json",
+    "bridgeSchema": "schema/bridge-v1.schema.json",
+    "scenarios": "scenarios/"
+  },
+  "testData": "All tokens, e-mail addresses and IP addresses are synthetic: tokens use the mobsdk_test_ prefix, e-mails the example.com domain (RFC 2606) and IPs the TEST-NET ranges (RFC 5737)."
+}

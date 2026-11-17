@@ -1,0 +1,119 @@
+{
+  "id": "blik_rejected_code_creates_new_transaction",
+  "title": "BLIK: a rejected code abandons its transaction; the next code creates exactly one new one",
+  "since": "1.0.0",
+  "covers": [
+    "blik",
+    "no_unsafe_post_retry"
+  ],
+  "api": {
+    "channels": [
+      {
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [
+            {
+              "id": "blik-level0",
+              "name": "BLIK Level 0",
+              "type": "blik",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "20000.00"
+              }
+            },
+            {
+              "id": "mbank",
+              "name": "mBank",
+              "type": "transfer",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "50000.00"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "create_transaction": [
+      {
+        "status": 201,
+        "json": {
+          "success": true,
+          "data": {
+            "transactionId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301",
+            "redirectUrl": "https://secure.simpay.pl/pay/abc"
+          }
+        }
+      },
+      {
+        "status": 201,
+        "json": {
+          "success": true,
+          "data": {
+            "transactionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+            "redirectUrl": "https://secure.simpay.pl/pay/abc"
+          }
+        }
+      }
+    ],
+    "submit_blik_code": [
+      {
+        "status": 409
+      },
+      {
+        "status": 204
+      }
+    ],
+    "transaction_status": [
+      {
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": {
+            "status": "transaction_paid"
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "action": "load_channels"
+    },
+    {
+      "action": "select_channel",
+      "channelId": "blik-level0"
+    },
+    {
+      "action": "submit_blik_code",
+      "code": "111111"
+    },
+    {
+      "action": "submit_blik_code",
+      "code": "222222"
+    },
+    {
+      "action": "run_polling"
+    }
+  ],
+  "expect": {
+    "result": {
+      "type": "succeeded",
+      "transactionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "status": "transaction_paid"
+    },
+    "requests": {
+      "create_transaction": 2,
+      "submit_blik_code": 2
+    },
+    "transactionCreatedEvents": 2
+  },
+  "androidToday": "Same flow; Android also treats 409 on any endpoint as blik_rejected."
+}

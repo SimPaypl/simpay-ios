@@ -1,0 +1,19 @@
+{
+  "$comment": "Unknown outcome. outcome_unknown means: it is not known whether a transaction was created. It carries no transaction id, is never a failure and is never repeated automatically. When a transaction id IS known, an uncertain step leads to status polling instead (and at worst to pending).",
+  "resultType": "outcome_unknown",
+  "transactionId": "forbidden",
+  "situations": [
+    { "situation": "POST /transactions timed out", "result": "outcome_unknown", "scenario": "create_timeout_is_outcome_unknown" },
+    { "situation": "POST /transactions connection lost after sending", "result": "outcome_unknown", "scenario": "create_connection_lost_is_outcome_unknown" },
+    { "situation": "POST /transactions answered 5xx", "result": "outcome_unknown", "scenario": "create_server_error_is_outcome_unknown" },
+    { "situation": "POST /transactions answered 2xx without a transaction id", "result": "outcome_unknown", "scenario": "create_without_id_is_outcome_unknown" },
+    { "situation": "POST /blik/level0 timed out (id known)", "result": "status polling; pending at worst", "scenario": "blik_submit_timeout_polls_status" },
+    { "situation": "Status unreadable until the budget ends (id known)", "result": "pending(status_unavailable)", "scenario": "polling_network_errors_end_pending" }
+  ],
+  "afterOutcomeUnknown": [
+    "The checkout ends; no further transaction can be created in it.",
+    "The payer sees: do not pay again until the shop confirms the order.",
+    "The merchant backend reconciles the order by control from SimPay webhooks."
+  ],
+  "androidToday": "No separate result: Failed(Indeterminate, retryable=false) for timeouts, and Failed(TransactionFailed, retryable=true) for the other cases above (P0)."
+}

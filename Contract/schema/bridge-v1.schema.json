@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://simpay.pl/schemas/mobile-sdk/bridge-v1.schema.json",
+  "title": "SimPay Mobile SDK bridge payloads, version 1",
+  "description": "Messages exchanged between the native SDKs (Android, iOS) and the Flutter / React Native adapters. Amounts are strings, never numbers. Unknown keys are ignored by readers. Session tokens flow only from the adapter to the SDK and never appear in any SDK output.",
+  "$defs": {
+    "version": { "const": 1 },
+    "amount": { "type": "string", "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,2})?$" },
+    "transactionId": { "type": "string", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" },
+    "code": { "type": "string", "pattern": "^[a-z]+(_[a-z]+)*$", "description": "Stable error code from codes/codes.json. Readers must accept codes they do not know." },
+    "configuration": {
+      "type": "object",
+      "required": ["serviceId", "merchantDisplayName"],
+      "properties": {
+        "serviceId": { "type": "string" },
+        "merchantDisplayName": { "type": "string" }
+      }
+    },
+    "order": {
+      "type": "object",
+      "required": ["amount", "customerEmail"],
+      "properties": {
+        "amount": { "$ref": "#/$defs/amount" },
+        "currency": { "type": ["string", "null"], "default": "PLN" },
+        "description": { "type": ["string", "null"], "maxLength": 64 },
+        "control": { "type": ["string", "null"], "maxLength": 255 },
+        "customerEmail": { "type": "string", "minLength": 1 },
+        "customerCountryCode": { "type": ["string", "null"], "pattern": "^[A-Z]{2}$" },
+        "returnUrls": {
+          "type": ["object", "null"],
+          "required": ["success", "failure"],
+          "properties": { "success": { "type": "string" }, "failure": { "type": "string" } }
+        },
+        "payerIpOverride": { "type": ["string", "null"] }
+      }
+    },
+    "presentRequest": {
+      "type": "object",
+      "required": ["version", "configuration", "order"],
+      "properties": {
+        "version": { "$ref": "#/$defs/version" },
+        "configuration": { "$ref": "#/$defs/configuration" },
+        "order": { "$ref": "#/$defs/order" }
+      }
+    },
+    "session": {
+      "description": "Answer of the adapter to a session request. Produced by the merchant backend. Never logged.",
+      "type": "object",
+      "required": ["token"],
+      "properties": {
+        "token": { "type": "string", "minLength": 1 },
+        "expiresAt": { "type": ["string", "null"], "description": "ISO 8601 date-time with a time zone." },
+        "payerIp": { "type": ["string", "null"] }
+      }
+    },
+    "sessionRequest": {
+      "description": "SDK -> adapter: the SDK needs a session. The adapter answers with resolveSession(requestId, session) or rejectSession(requestId, error).",
+      "type": "object",
+      "required": ["version", "type", "requestId"],
+      "properties": {
+        "version": { "$ref": "#/$defs/version" },
+        "type": { "const": "session_request" },
+        "requestId": { "type": "string" }
+      }
+    },
+    "error": {
+      "type": "object",
+      "required": ["code"],
+      "properties": {
+        "code": { "$ref": "#/$defs/code" },
+        "message": { "type": "string", "description": "English diagnostic for developers, free of personal data. Never shown to payers." }
+      }
+    },
+    "result": {
+      "type": "object",
+      "required": ["version", "type"],
+      "properties": {
+        "version": { "$ref": "#/$defs/version" },
+        "type": { "enum": ["succeeded", "pending", "failed", "outcome_unknown", "cancelled"] },
+        "transactionId": { "$ref": "#/$defs/transactionId" },
+        "status": { "type": "string", "description": "Raw API status, for diagnostics." },
+        "pendingReason": { "enum": ["in_progress", "verification_required", "unrecognized_status", "status_unavailable"] },
+        "error": { "$ref": "#/$defs/error" }
+      },
+      "allOf": [
+        { "if": { "properties": { "type": { "const": "succeeded" } } }, "then": { "required": ["transactionId", "status"] } },
+        { "if": { "properties": { "type": { "const": "pending" } } }, "then": { "required": ["transactionId", "pendingReason"] } },
+        { "if": { "properties": { "type": { "const": "failed" } } }, "then": { "required": ["error"] } },
+        { "if": { "properties": { "type": { "const": "outcome_unknown" } } }, "then": { "required": ["error"], "not": { "required": ["transactionId"] } } },
+        { "if": { "properties": { "type": { "const": "cancelled" } } }, "then": { "not": { "required": ["transactionId"] } } }
+      ]
+    },
+    "transactionCreatedEvent": {
+      "type": "object",
+      "required": ["version", "type", "transactionId"],
+      "properties": {
+        "version": { "$ref": "#/$defs/version" },
+        "type": { "const": "transaction_created" },
+        "transactionId": { "$ref": "#/$defs/transactionId" }
+      }
+    },
+    "statusRequest": {
+      "description": "Adapter -> SDK: read the status of a known transaction (recovery after the app was terminated). Answered with a result payload.",
+      "type": "object",
+      "required": ["version", "configuration", "transactionId"],
+      "properties": {
+        "version": { "$ref": "#/$defs/version" },
+        "configuration": { "$ref": "#/$defs/configuration" },
+        "transactionId": { "$ref": "#/$defs/transactionId" }
+      }
+    },
+    "returnUrlRequest": {
+      "description": "Adapter -> SDK: a URL was opened in the app. Answered with a boolean: true when it belonged to the active checkout. Never a payment confirmation.",
+      "type": "object",
+      "required": ["version", "url"],
+      "properties": {
+        "version": { "$ref": "#/$defs/version" },
+        "url": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": "blik",
+      "name": "BLIK",
+      "type": "blik",
+      "img": "https://example-host/img/blik.png",
+      "currencies": ["PLN"],
+      "amount": { "min": "1.00", "max": "5000.00" }
+    },
+    {
+      "id": 12,
+      "name": "Bank transfer",
+      "type": "pbl",
+      "img": null,
+      "currencies": ["PLN", "EUR"],
+      "amount": { "min": 2, "max": 100 }
+    }
+  ]
+}

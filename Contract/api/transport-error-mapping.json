@@ -1,0 +1,39 @@
+{
+  "$comment": "Classification of transport failures (no HTTP status was received). Failure names are platform neutral; 'platforms' tells each runner which native error to raise. The rule: a failure counts as not_delivered only when it proves no connection was made. Any other failure of a mutating request is outcome_unknown.",
+  "failures": {
+    "not_connected":        { "meaning": "The device is offline.",                                   "ios": "URLError.notConnectedToInternet", "android": "java.net.ConnectException (no route)" },
+    "dns_failure":          { "meaning": "The host name could not be resolved.",                    "ios": "URLError.dnsLookupFailed",        "android": "java.net.UnknownHostException" },
+    "connection_refused":   { "meaning": "TCP connection refused before any byte was sent.",         "ios": "URLError.cannotConnectToHost",    "android": "java.net.ConnectException" },
+    "certificate_rejected": { "meaning": "Server certificate rejected during the TLS handshake.",     "ios": "URLError.serverCertificateUntrusted", "android": "javax.net.ssl.SSLHandshakeException (certificate)" },
+    "timeout":              { "meaning": "No answer in time. The request may have been processed.",  "ios": "URLError.timedOut",               "android": "java.net.SocketTimeoutException" },
+    "connection_lost":      { "meaning": "Connection dropped after the request may have been sent.", "ios": "URLError.networkConnectionLost",  "android": "java.net.SocketException (connection reset)" },
+    "tls_failure":          { "meaning": "Generic TLS failure; the point of failure is unknown.",    "ios": "URLError.secureConnectionFailed", "android": "javax.net.ssl.SSLException" },
+    "unknown":              { "meaning": "Any other failure.",                                        "ios": "a non-URLError error",            "android": "java.io.IOException" }
+  },
+  "cases": [
+    { "failure": "not_connected",        "endpoint": "*",                  "code": "no_internet",              "kind": "not_delivered" },
+    { "failure": "dns_failure",          "endpoint": "*",                  "code": "no_internet",              "kind": "not_delivered" },
+    { "failure": "connection_refused",   "endpoint": "*",                  "code": "no_internet",              "kind": "not_delivered" },
+    { "failure": "certificate_rejected", "endpoint": "*",                  "code": "secure_connection_failed", "kind": "not_delivered", "androidToday": "channels_failed / transaction_failed / blik_rejected (generic IOException)" },
+
+    { "failure": "timeout",         "endpoint": "create_transaction", "code": "outcome_unknown", "kind": "outcome_unknown", "androidToday": "indeterminate" },
+    { "failure": "connection_lost", "endpoint": "create_transaction", "code": "outcome_unknown", "kind": "outcome_unknown", "androidToday": "transaction_failed (retry offered)" },
+    { "failure": "tls_failure",     "endpoint": "create_transaction", "code": "outcome_unknown", "kind": "outcome_unknown", "androidToday": "transaction_failed (retry offered)" },
+    { "failure": "unknown",         "endpoint": "create_transaction", "code": "outcome_unknown", "kind": "outcome_unknown", "androidToday": "transaction_failed (retry offered)" },
+
+    { "failure": "timeout",         "endpoint": "submit_blik_code", "code": "outcome_unknown", "kind": "outcome_unknown", "androidToday": "indeterminate" },
+    { "failure": "connection_lost", "endpoint": "submit_blik_code", "code": "outcome_unknown", "kind": "outcome_unknown", "androidToday": "blik_rejected" },
+    { "failure": "tls_failure",     "endpoint": "submit_blik_code", "code": "outcome_unknown", "kind": "outcome_unknown", "androidToday": "blik_rejected" },
+    { "failure": "unknown",         "endpoint": "submit_blik_code", "code": "outcome_unknown", "kind": "outcome_unknown", "androidToday": "blik_rejected" },
+
+    { "failure": "timeout",         "endpoint": "channels",           "code": "timeout",                  "kind": "transient" },
+    { "failure": "connection_lost", "endpoint": "channels",           "code": "no_internet",              "kind": "transient", "androidToday": "channels_failed" },
+    { "failure": "tls_failure",     "endpoint": "channels",           "code": "secure_connection_failed", "kind": "transient", "androidToday": "channels_failed" },
+    { "failure": "unknown",         "endpoint": "channels",           "code": "internal",                 "kind": "transient", "androidToday": "channels_failed" },
+
+    { "failure": "timeout",         "endpoint": "transaction_status", "code": "timeout",                  "kind": "transient" },
+    { "failure": "connection_lost", "endpoint": "transaction_status", "code": "no_internet",              "kind": "transient", "androidToday": "transaction_failed" },
+    { "failure": "tls_failure",     "endpoint": "transaction_status", "code": "secure_connection_failed", "kind": "transient", "androidToday": "transaction_failed" },
+    { "failure": "unknown",         "endpoint": "transaction_status", "code": "internal",                 "kind": "transient", "androidToday": "transaction_failed" }
+  ]
+}

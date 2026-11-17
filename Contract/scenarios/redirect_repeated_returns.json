@@ -1,0 +1,114 @@
+{
+  "id": "redirect_repeated_returns",
+  "title": "Redirect: repeated return signals create nothing and give one result",
+  "since": "1.0.0",
+  "covers": [
+    "redirect",
+    "deep_link",
+    "no_unsafe_post_retry"
+  ],
+  "api": {
+    "channels": [
+      {
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [
+            {
+              "id": "blik-level0",
+              "name": "BLIK Level 0",
+              "type": "blik",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "20000.00"
+              }
+            },
+            {
+              "id": "mbank",
+              "name": "mBank",
+              "type": "transfer",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "50000.00"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "create_transaction": [
+      {
+        "status": 201,
+        "json": {
+          "success": true,
+          "data": {
+            "transactionId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301",
+            "redirectUrl": "https://secure.simpay.pl/pay/abc"
+          }
+        }
+      }
+    ],
+    "transaction_status": [
+      {
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": {
+            "status": "transaction_new"
+          }
+        }
+      },
+      {
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": {
+            "status": "transaction_paid"
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "action": "load_channels"
+    },
+    {
+      "action": "select_channel",
+      "channelId": "mbank"
+    },
+    {
+      "action": "lifecycle",
+      "event": "returned_from_redirect"
+    },
+    {
+      "action": "lifecycle",
+      "event": "returned_from_redirect"
+    },
+    {
+      "action": "lifecycle",
+      "event": "returned_from_redirect"
+    },
+    {
+      "action": "run_polling"
+    }
+  ],
+  "expect": {
+    "result": {
+      "type": "succeeded",
+      "transactionId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301",
+      "status": "transaction_paid"
+    },
+    "requests": {
+      "create_transaction": 1,
+      "submit_blik_code": 0
+    },
+    "transactionCreatedEvents": 1
+  }
+}

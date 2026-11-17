@@ -1,0 +1,72 @@
+{
+  "id": "missing_payer_ip_sends_nothing",
+  "title": "Creation: without a payer IP nothing is sent",
+  "since": "1.0.0",
+  "covers": [
+    "validation",
+    "results"
+  ],
+  "api": {
+    "channels": [
+      {
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [
+            {
+              "id": "blik-level0",
+              "name": "BLIK Level 0",
+              "type": "blik",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "20000.00"
+              }
+            },
+            {
+              "id": "mbank",
+              "name": "mBank",
+              "type": "transfer",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "50000.00"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "action": "load_channels"
+    },
+    {
+      "action": "select_channel",
+      "channelId": "mbank"
+    },
+    {
+      "action": "close"
+    }
+  ],
+  "expect": {
+    "result": {
+      "type": "failed",
+      "error": {
+        "code": "missing_payer_ip"
+      }
+    },
+    "requests": {
+      "create_transaction": 0,
+      "submit_blik_code": 0
+    }
+  },
+  "session": {
+    "payerIp": null
+  }
+}

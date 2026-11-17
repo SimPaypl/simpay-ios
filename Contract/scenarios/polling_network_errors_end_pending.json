@@ -1,0 +1,105 @@
+{
+  "id": "polling_network_errors_end_pending",
+  "title": "Polling: network problems never fail the payment",
+  "since": "1.0.0",
+  "covers": [
+    "polling",
+    "timeouts",
+    "outcome_unknown"
+  ],
+  "api": {
+    "channels": [
+      {
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [
+            {
+              "id": "blik-level0",
+              "name": "BLIK Level 0",
+              "type": "blik",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "20000.00"
+              }
+            },
+            {
+              "id": "mbank",
+              "name": "mBank",
+              "type": "transfer",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "50000.00"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "create_transaction": [
+      {
+        "status": 201,
+        "json": {
+          "success": true,
+          "data": {
+            "transactionId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301",
+            "redirectUrl": "https://secure.simpay.pl/pay/abc"
+          }
+        }
+      }
+    ],
+    "submit_blik_code": [
+      {
+        "status": 204
+      }
+    ],
+    "transaction_status": [
+      {
+        "transportFailure": "not_connected"
+      },
+      {
+        "transportFailure": "timeout"
+      },
+      {
+        "status": 503
+      },
+      {
+        "status": 429
+      }
+    ]
+  },
+  "steps": [
+    {
+      "action": "load_channels"
+    },
+    {
+      "action": "select_channel",
+      "channelId": "blik-level0"
+    },
+    {
+      "action": "submit_blik_code",
+      "code": "482913"
+    },
+    {
+      "action": "run_polling"
+    }
+  ],
+  "expect": {
+    "result": {
+      "type": "pending",
+      "transactionId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301",
+      "pendingReason": "status_unavailable"
+    },
+    "requests": {
+      "create_transaction": 1,
+      "submit_blik_code": 1
+    }
+  },
+  "androidToday": "failed(no_internet) on the first network error (P0)."
+}

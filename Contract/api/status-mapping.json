@@ -1,0 +1,21 @@
+{
+  "$comment": "Flow decision for every transaction status read from the API. Matching is exact and case sensitive. An unrecognized status is never a success. Identical on Android (TransactionStatus.fromRaw + terminalStateFor); the only difference is that Android reports pending without a reason field.",
+  "cases": [
+    { "raw": "transaction_new", "outcome": "keep_checking" },
+    { "raw": "transaction_generated", "outcome": "keep_checking" },
+    { "raw": "transaction_confirmed", "outcome": "keep_checking" },
+    { "raw": "transaction_paid", "outcome": "succeeded" },
+    { "raw": "transaction_failure", "outcome": "failed", "errorCode": "transaction_failed" },
+    { "raw": "transaction_fraud", "outcome": "failed", "errorCode": "transaction_failed" },
+    { "raw": "transaction_expired", "outcome": "failed", "errorCode": "transaction_failed" },
+    { "raw": "transaction_refunded", "outcome": "failed", "errorCode": "transaction_failed" },
+    { "raw": "transaction_fraud_possibility", "outcome": "pending", "pendingReason": "verification_required" },
+    { "raw": "transaction_something_new", "outcome": "pending", "pendingReason": "unrecognized_status" },
+    { "raw": "TRANSACTION_PAID", "outcome": "pending", "pendingReason": "unrecognized_status" },
+    { "raw": " transaction_paid", "outcome": "pending", "pendingReason": "unrecognized_status" },
+    { "raw": "transaction_paid ", "outcome": "pending", "pendingReason": "unrecognized_status" },
+    { "raw": "paid", "outcome": "pending", "pendingReason": "unrecognized_status" },
+    { "raw": "success", "outcome": "pending", "pendingReason": "unrecognized_status" },
+    { "raw": "", "outcome": "pending", "pendingReason": "unrecognized_status" }
+  ]
+}

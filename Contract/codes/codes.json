@@ -1,0 +1,43 @@
+{
+  "$comment": "Stable identifiers shared by the Android and iOS SDKs and the Flutter and React Native adapters. Values may be added in a minor contract version; they are never renamed, removed or given a different meaning.",
+  "errorCodes": [
+    { "code": "no_internet", "category": "connectivity", "meaning": "The request did not reach the server, or a read failed on the network.", "since": "1.0.0" },
+    { "code": "timeout", "category": "connectivity", "meaning": "A read-only request timed out. Never used for mutating requests (see outcome_unknown).", "since": "1.0.0" },
+    { "code": "rate_limited", "category": "connectivity", "meaning": "HTTP 429. The caller must wait before trying again.", "since": "1.0.0" },
+    { "code": "secure_connection_failed", "category": "connectivity", "meaning": "TLS could not be established or the certificate was rejected.", "since": "1.0.0" },
+    { "code": "service_unavailable", "category": "connectivity", "meaning": "HTTP 5xx answered to a read-only request.", "since": "1.0.0" },
+
+    { "code": "session_failed", "category": "session", "meaning": "The session provider failed or returned an unusable session.", "since": "1.0.0" },
+    { "code": "unauthorized", "category": "session", "meaning": "The access token was rejected (HTTP 401 or 403) after the allowed refresh.", "since": "1.0.0" },
+    { "code": "channels_failed", "category": "api", "meaning": "Payment channels could not be loaded.", "since": "1.0.0" },
+    { "code": "invalid_response", "category": "api", "meaning": "A read-only response could not be understood.", "since": "1.0.0" },
+    { "code": "validation_failed", "category": "api", "meaning": "The API rejected the transaction request payload (HTTP 400 or 422).", "since": "1.0.0" },
+    { "code": "transaction_not_found", "category": "api", "meaning": "The transaction is unknown to the API.", "since": "1.0.0" },
+
+    { "code": "transaction_failed", "category": "payment", "meaning": "The transaction definitely did not succeed (failure, fraud, expired, refunded) or creation was definitively refused.", "since": "1.0.0" },
+    { "code": "blik_rejected", "category": "payment", "meaning": "The BLIK code was rejected or is no longer usable.", "since": "1.0.0" },
+    { "code": "outcome_unknown", "category": "payment", "meaning": "A mutating request may or may not have taken effect. Never repeated automatically; reconcile by control from webhooks.", "since": "1.0.0" },
+
+    { "code": "invalid_order", "category": "integration", "meaning": "The order failed local validation. Nothing was sent.", "since": "1.0.0" },
+    { "code": "missing_payer_ip", "category": "integration", "meaning": "Neither the session nor the order supplied the payer IP. Nothing was sent.", "since": "1.0.0" },
+    { "code": "missing_country_code", "category": "integration", "meaning": "No customer country was given and the currency maps to no single country. Nothing was sent.", "since": "1.0.0" },
+    { "code": "already_presented", "category": "integration", "meaning": "A checkout is already on screen. The new call is answered at once.", "since": "1.0.0" },
+    { "code": "presentation_failed", "category": "integration", "meaning": "The payment sheet could not be shown. No transaction was attempted.", "since": "1.0.0" },
+    { "code": "invalid_configuration", "category": "integration", "meaning": "Invalid configuration or unsupported bridge payload version. Nothing was sent.", "since": "1.0.0" },
+    { "code": "browser_unavailable", "category": "integration", "meaning": "No browser can open the payment page (Android only).", "since": "1.0.0" },
+    { "code": "internal", "category": "internal", "meaning": "Unexpected failure inside the SDK.", "since": "1.0.0" }
+  ],
+  "pendingReasons": [
+    { "reason": "in_progress", "meaning": "The last known status is new, generated or confirmed." },
+    { "reason": "verification_required", "meaning": "transaction_fraud_possibility: the transaction is under verification." },
+    { "reason": "unrecognized_status", "meaning": "The API returned a status this contract version does not know. Never a success." },
+    { "reason": "status_unavailable", "meaning": "The status could not be read, or was not read before the checkout closed." }
+  ],
+  "resultTypes": [
+    { "type": "succeeded", "transactionId": "required", "meaning": "The API reported transaction_paid. Not proof of payment; the merchant backend confirms from the webhook." },
+    { "type": "pending", "transactionId": "required", "meaning": "A transaction exists; its final outcome is not known yet. Never a failure." },
+    { "type": "failed", "transactionId": "optional", "meaning": "The payment definitely did not succeed, or the checkout failed before any transaction could have been created." },
+    { "type": "outcome_unknown", "transactionId": "forbidden", "meaning": "It is unknown whether a transaction was created. Never repeated automatically." },
+    { "type": "cancelled", "transactionId": "forbidden", "meaning": "The payer left before any transaction was requested." }
+  ]
+}

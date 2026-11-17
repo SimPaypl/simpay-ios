@@ -1,0 +1,77 @@
+{
+  "id": "blik_invalid_code_sends_nothing",
+  "title": "BLIK: a malformed code is refused locally",
+  "since": "1.0.0",
+  "covers": [
+    "blik",
+    "validation"
+  ],
+  "api": {
+    "channels": [
+      {
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [
+            {
+              "id": "blik-level0",
+              "name": "BLIK Level 0",
+              "type": "blik",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "20000.00"
+              }
+            },
+            {
+              "id": "mbank",
+              "name": "mBank",
+              "type": "transfer",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "50000.00"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "action": "load_channels"
+    },
+    {
+      "action": "select_channel",
+      "channelId": "blik-level0"
+    },
+    {
+      "action": "submit_blik_code",
+      "code": "12a456",
+      "accepted": false
+    },
+    {
+      "action": "submit_blik_code",
+      "code": "12345",
+      "accepted": false
+    },
+    {
+      "action": "close"
+    }
+  ],
+  "expect": {
+    "result": {
+      "type": "cancelled"
+    },
+    "requests": {
+      "create_transaction": 0,
+      "submit_blik_code": 0
+    },
+    "transactionCreatedEvents": 0
+  }
+}

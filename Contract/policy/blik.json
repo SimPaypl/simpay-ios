@@ -1,0 +1,35 @@
+{
+  "$comment": "BLIK Level 0. The transaction is created only when the payer submits a code; HTTP 204 from the code endpoint only means the bank was asked to confirm. Success comes exclusively from a transaction status read from the API.",
+  "directChannel": "blik-level0",
+  "channelIdentifiers": ["blik", "blik-level0", "blik_level_0"],
+  "collapseDuplicates": "The API may list BLIK twice (redirect BLIK and Level 0); the SDK shows one BLIK entry, first on the list.",
+  "request": {
+    "endpoint": "POST /payment/{serviceId}/blik/level0/{transactionId}",
+    "body": "{\"ticket\":{\"T6\":\"<code>\"}}",
+    "note": "The key T6 is upper case."
+  },
+  "code": {
+    "pattern": "^[0-9]{6}$",
+    "valid": ["482913", "000000"],
+    "invalid": ["", "12345", "1234567", "12a456", " 123456", "123 456", "١٢٣٤٥٦"],
+    "logging": "A code is never logged, printed or kept after it was sent."
+  },
+  "afterSubmit": [
+    { "answer": "HTTP 204", "next": "awaiting_bank_confirmation", "startsPolling": true },
+    { "answer": "HTTP 400 / 409 / 422", "next": "code_rejected", "transaction": "abandoned; the next code creates a new transaction", "countsAsRejection": true },
+    { "answer": "HTTP 401 / 403 / 429, not_delivered", "next": "code_entry_same_transaction", "transaction": "kept; the next code is sent to it", "countsAsRejection": false, "androidToday": "failed" },
+    { "answer": "timeout, connection lost, 5xx, 3xx", "next": "checking_status", "transaction": "kept; status is polled", "countsAsRejection": false, "androidToday": "failed(indeterminate) without a status check" },
+    { "answer": "HTTP 404", "next": "failed", "errorCode": "transaction_not_found" }
+  ],
+  "rejectionLimit": {
+    "maximumRejections": 5,
+    "afterLimit": { "type": "failed", "errorCode": "blik_rejected" },
+    "confirmed": false,
+    "note": "5, as MAX_BLIK_REJECTIONS in the Android SDK."
+  },
+  "unconfirmed": [
+    "Does a rejected ticket (400/409/422) always close the transaction?",
+    "Do 400 and 422 always mean a rejected code, never a malformed request?",
+    "May a code be resent to the same transaction after 401 or 429?"
+  ]
+}

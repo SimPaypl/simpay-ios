@@ -1,0 +1,66 @@
+{
+  "id": "cancel_on_blik_entry",
+  "title": "Cancel: closing the BLIK entry before submitting is cancelled",
+  "since": "1.0.0",
+  "covers": [
+    "cancellation",
+    "blik"
+  ],
+  "api": {
+    "channels": [
+      {
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [
+            {
+              "id": "blik-level0",
+              "name": "BLIK Level 0",
+              "type": "blik",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "20000.00"
+              }
+            },
+            {
+              "id": "mbank",
+              "name": "mBank",
+              "type": "transfer",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "50000.00"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "action": "load_channels"
+    },
+    {
+      "action": "select_channel",
+      "channelId": "blik-level0"
+    },
+    {
+      "action": "close"
+    }
+  ],
+  "expect": {
+    "result": {
+      "type": "cancelled"
+    },
+    "requests": {
+      "create_transaction": 0,
+      "submit_blik_code": 0
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "$comment": "Examples of the bridge-v1 payload format exchanged between the native SDKs and the Flutter / React Native adapters. Normative description: schema/bridge-v1.schema.json. Native codecs must decode every 'request' exactly as stated and encode every 'result' to exactly the given payload.",
+  "presentRequests": [
+    {
+      "name": "minimal",
+      "payload": { "version": 1, "configuration": { "serviceId": "a1b2c3d4", "merchantDisplayName": "Example Shop" }, "order": { "amount": "49.99", "customerEmail": "payer@example.com" } },
+      "expect": "valid",
+      "decoded": { "serviceId": "a1b2c3d4", "merchantDisplayName": "Example Shop", "amount": "49.99", "currency": "PLN" }
+    },
+    {
+      "name": "full order, unknown keys ignored",
+      "payload": {
+        "version": 1,
+        "configuration": { "serviceId": "a1b2c3d4", "merchantDisplayName": "Example Shop", "futureOption": true },
+        "order": {
+          "amount": "1234.50", "currency": "EUR", "description": "Order 1001", "control": "order-1001",
+          "customerEmail": "payer@example.com", "customerCountryCode": "DE",
+          "returnUrls": { "success": "shopapp://simpay/return", "failure": "shopapp://simpay/return" },
+          "payerIpOverride": "203.0.113.10", "futureField": "ignored"
+        }
+      },
+      "expect": "valid",
+      "decoded": { "serviceId": "a1b2c3d4", "merchantDisplayName": "Example Shop", "amount": "1234.5", "currency": "EUR" }
+    },
+    { "name": "unsupported version", "payload": { "version": 2, "configuration": { "serviceId": "a1b2c3d4", "merchantDisplayName": "Shop" }, "order": { "amount": "1", "customerEmail": "payer@example.com" } }, "expect": "invalid_configuration" },
+    { "name": "version missing", "payload": { "configuration": { "serviceId": "a1b2c3d4", "merchantDisplayName": "Shop" }, "order": { "amount": "1", "customerEmail": "payer@example.com" } }, "expect": "invalid_configuration" },
+    { "name": "configuration missing", "payload": { "version": 1, "order": { "amount": "1", "customerEmail": "payer@example.com" } }, "expect": "invalid_configuration" },
+    { "name": "service id of wrong type", "payload": { "version": 1, "configuration": { "serviceId": 42, "merchantDisplayName": "Shop" }, "order": { "amount": "1", "customerEmail": "payer@example.com" } }, "expect": "invalid_configuration" },
+    { "name": "order missing", "payload": { "version": 1, "configuration": { "serviceId": "a1b2c3d4", "merchantDisplayName": "Shop" } }, "expect": "invalid_order" },
+    { "name": "amount as a number", "payload": { "version": 1, "configuration": { "serviceId": "a1b2c3d4", "merchantDisplayName": "Shop" }, "order": { "amount": 49.99, "customerEmail": "payer@example.com" } }, "expect": "invalid_order" },
+    { "name": "EUR without a country", "payload": { "version": 1, "configuration": { "serviceId": "a1b2c3d4", "merchantDisplayName": "Shop" }, "order": { "amount": "10", "currency": "EUR", "customerEmail": "payer@example.com" } }, "expect": "missing_country_code" }
+  ],
+  "results": [
+    { "name": "succeeded", "payload": { "version": 1, "type": "succeeded", "transactionId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301", "status": "transaction_paid" } },
+    { "name": "pending with status", "payload": { "version": 1, "type": "pending", "transactionId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301", "status": "transaction_confirmed", "pendingReason": "in_progress" } },
+    { "name": "pending without status", "payload": { "version": 1, "type": "pending", "transactionId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301", "pendingReason": "status_unavailable" } },
+    { "name": "failed transaction", "payload": { "version": 1, "type": "failed", "transactionId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301", "status": "transaction_failure", "error": { "code": "transaction_failed" } } },
+    { "name": "failed before a transaction", "payload": { "version": 1, "type": "failed", "error": { "code": "missing_payer_ip", "message": "payer IP is missing" } } },
+    { "name": "outcome unknown", "payload": { "version": 1, "type": "outcome_unknown", "error": { "code": "outcome_unknown" } } },
+    { "name": "cancelled", "payload": { "version": 1, "type": "cancelled" } }
+  ],
+  "events": [
+    { "name": "transaction created", "payload": { "version": 1, "type": "transaction_created", "transactionId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301" } }
+  ],
+  "transactionIds": [
+    { "text": "3f2504e0-4f89-41d3-9a0c-0305e82c3301", "valid": true },
+    { "text": "3F2504E0-4F89-41D3-9A0C-0305E82C3301", "valid": true, "note": "Upper-case hex is accepted and kept verbatim; ids are compared exactly, as on Android." },
+    { "text": "3f2504e04f8941d39a0c0305e82c3301", "valid": false },
+    { "text": "", "valid": false }
+  ]
+}

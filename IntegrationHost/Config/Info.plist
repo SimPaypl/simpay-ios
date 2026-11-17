@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- iOS shows a framework's strings only in languages the app itself declares. -->
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>pl</string>
+	</array>
+	<!-- Return URL scheme of the integration host. Must match SimPayOrder.returnURLs
+	     (simpayhost://payment-return) and the return URLs configured for the service. -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>pl.simpay.checkout.integrationhost.return</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>simpayhost</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

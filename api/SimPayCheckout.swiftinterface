@@ -1,0 +1,52 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)
+// swift-module-flags: -target arm64-apple-ios16.0 -enable-objc-interop -enable-library-evolution -language-mode 6 -O -enable-experimental-feature DebugDescriptionMacro -module-name SimPayCheckout -package-name simpay_ios
+// swift-module-flags-ignorable:  -formal-cxx-interoperability-mode=off -interface-compiler-version 6.4
+import Combine
+import Foundation
+import Foundation/*.Bundle*/
+import Foundation/*.ProcessInfo*/
+import Foundation/*.URL*/
+import SafariServices
+@_exported import SimPayCheckoutCore
+import Swift
+import SwiftUI
+import UIKit
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+extension SwiftUICore::View {
+  @_Concurrency::MainActor @preconcurrency public func simPayCheckout(isPresented: SwiftUICore::Binding<Swift::Bool>, checkout: SimPayCheckout::SimPayCheckout, order: SimPayCheckoutCore::SimPayOrder, onTransactionCreated: (@_Concurrency::MainActor @Sendable (SimPayCheckoutCore::TransactionID) -> Swift::Void)? = nil, onCompletion: @escaping @_Concurrency::MainActor @Sendable (SimPayCheckoutCore::SimPayCheckoutResult) -> Swift::Void) -> some SwiftUICore::View
+  
+}
+@_hasMissingDesignatedInitializers @_Concurrency::MainActor final public class SimPayCheckout {
+  @_Concurrency::MainActor final public let configuration: SimPayCheckout::SimPayConfiguration
+  @_Concurrency::MainActor convenience public init(configuration: SimPayCheckout::SimPayConfiguration, sessionProvider: any SimPayCheckoutCore::SimPaySessionProvider)
+  @_Concurrency::MainActor final public var isPresenting: Swift::Bool {
+    get
+  }
+  @_Concurrency::MainActor final public func present(_ order: SimPayCheckoutCore::SimPayOrder, from viewController: UIKit::UIViewController, onTransactionCreated: (@_Concurrency::MainActor @Sendable (SimPayCheckoutCore::TransactionID) -> Swift::Void)? = nil) async -> SimPayCheckoutCore::SimPayCheckoutResult
+  @_Concurrency::MainActor final public func present(_ order: SimPayCheckoutCore::SimPayOrder, from viewController: UIKit::UIViewController, onTransactionCreated: (@_Concurrency::MainActor @Sendable (SimPayCheckoutCore::TransactionID) -> Swift::Void)? = nil, completion: @escaping @_Concurrency::MainActor @Sendable (SimPayCheckoutCore::SimPayCheckoutResult) -> Swift::Void)
+  @_Concurrency::MainActor final public func transactionStatus(of transactionID: SimPayCheckoutCore::TransactionID) async throws -> SimPayCheckoutCore::SimPayCheckoutResult
+  @discardableResult
+  @_Concurrency::MainActor final public func handleReturnURL(_ url: Foundation::URL) -> Swift::Bool
+  @discardableResult
+  @_Concurrency::MainActor public static func handleReturnURL(_ url: Foundation::URL) -> Swift::Bool
+  @discardableResult
+  @_Concurrency::MainActor public static func handleUserActivity(_ userActivity: Foundation::NSUserActivity) -> Swift::Bool
+  @objc deinit
+}
+public enum SimPayCheckoutSDK {
+  public static let version: Swift::String
+}
+public struct SimPayConfiguration : Swift::Sendable, Swift::Hashable {
+  public let serviceID: Swift::String
+  public let merchantDisplayName: Swift::String
+  public init?(serviceID: Swift::String, merchantDisplayName: Swift::String)
+  public static func == (a: SimPayCheckout::SimPayConfiguration, b: SimPayCheckout::SimPayConfiguration) -> Swift::Bool
+  public func hash(into hasher: inout Swift::Hasher)
+  public var hashValue: Swift::Int {
+    get
+  }
+}
+extension SimPayCheckout::SimPayCheckout : Swift::Sendable {}

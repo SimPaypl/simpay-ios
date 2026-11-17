@@ -1,0 +1,151 @@
+{
+  "id": "blik_rejection_limit",
+  "title": "BLIK: the fifth rejected code ends the checkout; a sixth code is ignored",
+  "since": "1.0.0",
+  "covers": [
+    "blik",
+    "results"
+  ],
+  "api": {
+    "channels": [
+      {
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [
+            {
+              "id": "blik-level0",
+              "name": "BLIK Level 0",
+              "type": "blik",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "20000.00"
+              }
+            },
+            {
+              "id": "mbank",
+              "name": "mBank",
+              "type": "transfer",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "50000.00"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "create_transaction": [
+      {
+        "status": 201,
+        "json": {
+          "success": true,
+          "data": {
+            "transactionId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301",
+            "redirectUrl": "https://secure.simpay.pl/pay/abc"
+          }
+        }
+      },
+      {
+        "status": 201,
+        "json": {
+          "success": true,
+          "data": {
+            "transactionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+            "redirectUrl": "https://secure.simpay.pl/pay/abc"
+          }
+        }
+      },
+      {
+        "status": 201,
+        "json": {
+          "success": true,
+          "data": {
+            "transactionId": "bbbbbbbb-cccc-dddd-eeee-ffffffffffff",
+            "redirectUrl": "https://secure.simpay.pl/pay/abc"
+          }
+        }
+      },
+      {
+        "status": 201,
+        "json": {
+          "success": true,
+          "data": {
+            "transactionId": "cccccccc-dddd-eeee-ffff-000000000000",
+            "redirectUrl": "https://secure.simpay.pl/pay/abc"
+          }
+        }
+      },
+      {
+        "status": 201,
+        "json": {
+          "success": true,
+          "data": {
+            "transactionId": "dddddddd-eeee-ffff-0000-111111111111",
+            "redirectUrl": "https://secure.simpay.pl/pay/abc"
+          }
+        }
+      }
+    ],
+    "submit_blik_code": [
+      {
+        "status": 422
+      }
+    ]
+  },
+  "steps": [
+    {
+      "action": "load_channels"
+    },
+    {
+      "action": "select_channel",
+      "channelId": "blik-level0"
+    },
+    {
+      "action": "submit_blik_code",
+      "code": "111110"
+    },
+    {
+      "action": "submit_blik_code",
+      "code": "111111"
+    },
+    {
+      "action": "submit_blik_code",
+      "code": "111112"
+    },
+    {
+      "action": "submit_blik_code",
+      "code": "111113"
+    },
+    {
+      "action": "submit_blik_code",
+      "code": "111114"
+    },
+    {
+      "action": "submit_blik_code",
+      "code": "999999",
+      "accepted": false
+    }
+  ],
+  "expect": {
+    "result": {
+      "type": "failed",
+      "error": {
+        "code": "blik_rejected"
+      },
+      "transactionId": "dddddddd-eeee-ffff-0000-111111111111"
+    },
+    "requests": {
+      "create_transaction": 5,
+      "submit_blik_code": 5
+    },
+    "transactionCreatedEvents": 5
+  },
+  "androidToday": "Limit 5 (MAX_BLIK_REJECTIONS)."
+}

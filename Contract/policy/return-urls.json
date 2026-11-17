@@ -1,0 +1,36 @@
+{
+  "$comment": "Return addresses. A return URL is only a signal that the payer came back: the status of the known transaction is read from the API. Query and fragment are never trusted (?result=success proves nothing). 'paymentPage' lists checks applied before a redirectUrl is opened; 'returns' lists URLs opened in the app and whether they belong to the checkout whose order declared 'orderReturnUrls'.",
+  "orderReturnUrls": { "success": "shopapp://simpay/return", "failure": "https://shop.example.com/simpay/failed" },
+  "paymentPage": [
+    { "url": "https://secure.simpay.pl/pay/abc", "allowed": true },
+    { "url": "https://secure.simpay.pl/pay/abc?x=1#y", "allowed": true },
+    { "url": "http://secure.simpay.pl/pay/abc", "allowed": false },
+    { "url": "javascript:alert(1)", "allowed": false },
+    { "url": "data:text/html,hi", "allowed": false },
+    { "url": "file:///etc/passwd", "allowed": false },
+    { "url": "https://user:secret@secure.simpay.pl/pay", "allowed": false },
+    { "url": "shopapp://simpay/return", "allowed": false }
+  ],
+  "returns": [
+    { "url": "shopapp://simpay/return", "matches": true },
+    { "url": "SHOPAPP://SIMPAY/return", "matches": true, "note": "Scheme and host compare case-insensitively." },
+    { "url": "shopapp://simpay/return/", "matches": true, "note": "A trailing slash is ignored." },
+    { "url": "shopapp://simpay/return?result=success", "matches": true, "note": "Matches, but the query is ignored: never a success." },
+    { "url": "https://shop.example.com/simpay/failed", "matches": true, "note": "Universal Link." },
+    { "url": "https://shop.example.com/simpay/failed#done", "matches": true },
+    { "url": "shopapp://simpay/other", "matches": false },
+    { "url": "shopapp://other/return", "matches": false },
+    { "url": "otherapp://simpay/return", "matches": false },
+    { "url": "http://shop.example.com/simpay/failed", "matches": false },
+    { "url": "https://shop.example.com:8443/simpay/failed", "matches": false },
+    { "url": "https://user@shop.example.com/simpay/failed", "matches": false },
+    { "url": "javascript://simpay/return", "matches": false }
+  ],
+  "flowRules": [
+    "A return before any transaction exists is not handled (returns false) and does nothing.",
+    "A return after the checkout finished is not handled and does nothing.",
+    "Repeated returns only read the status again; they never create a transaction or a second result.",
+    "Closing the payment page counts as a return."
+  ],
+  "androidToday": "The SDK does not inspect return URLs; the app's deep-link activity brings the task to front and onResume triggers a status check. Equivalent behaviour, no URL matching."
+}

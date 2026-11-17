@@ -1,0 +1,32 @@
+{
+  "$comment": "Status polling. One poller per transaction, never two status requests in flight. Polling never turns a network problem into a failed payment.",
+  "initialIntervalSeconds": 2,
+  "maximumIntervalSeconds": 5,
+  "budgetSeconds": 120,
+  "firstReadImmediate": true,
+  "intervalsSeconds": [2, 4, 5, 5, 5],
+  "maximumConsecutiveSessionFailures": 3,
+  "budgetPolicy": "The budget counts foreground time only, on a monotonic clock. Time in the background is not counted. The budget is never reset by a pause, a resume or a return from the bank.",
+  "startsAfter": ["blik_code_accepted", "blik_submit_outcome_unknown", "transaction_created_without_redirect_url", "return_from_payment_page"],
+  "readOutcomes": [
+    { "read": "transaction_paid", "outcome": "succeeded" },
+    { "read": "transaction_new | transaction_generated | transaction_confirmed", "outcome": "keep_polling" },
+    { "read": "transaction_fraud_possibility", "outcome": "pending", "pendingReason": "verification_required" },
+    { "read": "transaction_failure | transaction_fraud | transaction_expired | transaction_refunded", "outcome": "failed", "errorCode": "transaction_failed" },
+    { "read": "unrecognized status", "outcome": "pending", "pendingReason": "unrecognized_status" },
+    { "read": "no_internet | timeout | 5xx | 429 | unreadable body", "outcome": "keep_polling", "androidToday": "failed(no_internet / transaction_failed)" },
+    { "read": "429 with Retry-After", "outcome": "keep_polling", "note": "The next read waits at least Retry-After; if that exceeds the budget polling ends." },
+    { "read": "401", "outcome": "keep_polling_after_one_session_refresh", "note": "A second 401 ends polling as pending(status_unavailable)." },
+    { "read": "403 | 404", "outcome": "pending", "pendingReason": "status_unavailable", "androidToday": "failed" },
+    { "read": "3 consecutive session provider failures", "outcome": "pending", "pendingReason": "status_unavailable" }
+  ],
+  "budgetEnd": [
+    { "lastKnownStatus": "in progress", "outcome": "pending", "pendingReason": "in_progress" },
+    { "lastKnownStatus": "none", "outcome": "pending", "pendingReason": "status_unavailable" }
+  ],
+  "lifecycle": [
+    { "event": "did_enter_background", "effect": "Pause; the read in flight is cancelled and its answer discarded; the transaction id stays in memory." },
+    { "event": "will_enter_foreground", "effect": "Read at once, then continue with the remaining budget." },
+    { "event": "returned_from_redirect", "effect": "Read at once (start polling if needed). Never a success by itself." }
+  ]
+}

@@ -1,0 +1,90 @@
+/*
+  Polish strings of the SimPay payment sheet.
+
+  Wording follows the Android SDK and Polish banking apps: direct second person, no
+  anglicisms, and no claim that a payment is finished before the API confirms it.
+*/
+
+/* Header */
+"sheet.recipient" = "Odbiorca";
+"sheet.amount_due" = "Do zapłaty";
+"sheet.secure_note" = "Płatności są szyfrowane. Jesteś bezpieczny.";
+"sheet.close" = "Zamknij";
+"sheet.processing_hint" = "Poczekaj chwilę. Przetwarzamy płatność.";
+
+/* Channel list */
+"channels.loading" = "Wczytujemy metody płatności";
+"channels.empty" = "Brak dostępnych metod płatności";
+"channels.choose" = "Wybierz metodę płatności";
+"channels.blik_name" = "BLIK";
+"channels.blik_subtitle" = "Zapłać bez wychodzenia z aplikacji";
+"channels.other" = "Inne metody płatności";
+"channels.unavailable_currency" = "Niedostępna dla tej waluty";
+"channels.unavailable_amount" = "Niedostępna dla tej kwoty";
+
+/* BLIK */
+"blik.title" = "Wprowadź kod BLIK";
+"blik.hint" = "Kod BLIK znajdziesz w aplikacji swojego banku.";
+"blik.field_label" = "Kod BLIK";
+"blik.field_value" = "Wpisano %d z 6 cyfr";
+"blik.invalid_code" = "Podaj 6-cyfrowy kod BLIK";
+"blik.rejected_code" = "Podano błędny kod BLIK. Spróbuj ponownie.";
+"blik.new_payment" = "Kolejny kod rozpocznie nową płatność.";
+"blik.submission_failed" = "Nie udało się wysłać kodu. Spróbuj ponownie.";
+"blik.attempts_left" = "Pozostałe próby: %d";
+"blik.change_method" = "Zmień metodę płatności";
+
+/* Progress */
+"progress.preparing" = "Przygotowujemy płatność";
+"progress.sending_code" = "Wysyłamy kod";
+"progress.awaiting_bank" = "Potwierdź płatność w aplikacji swojego banku";
+"progress.awaiting_bank_detail" = "Czekamy na potwierdzenie.";
+"progress.checking_status" = "Sprawdzamy status płatności";
+"progress.checking_status_detail" = "To może chwilę potrwać.";
+
+/* Payment page */
+"redirect.opening" = "Otwieramy stronę płatności";
+"redirect.detail" = "Dokończ płatność na stronie operatora. Po powrocie sprawdzimy jej status.";
+"redirect.reopen" = "Otwórz ponownie stronę płatności";
+
+/* Outcomes */
+"result.success_title" = "Płatność zakończona";
+"result.success_detail" = "Sklep potwierdzi Twoje zamówienie.";
+"result.pending_title" = "Płatność jest w trakcie realizacji";
+"result.pending_detail" = "Możesz zamknąć to okno. Sklep potwierdzi wynik płatności.";
+"result.status_unavailable_detail" = "Nie udało się sprawdzić statusu płatności. Sklep potwierdzi jej wynik.";
+"result.verification_title" = "Weryfikujemy płatność";
+"result.verification_detail" = "Wynik potwierdzi sklep.";
+"result.expired_title" = "Płatność wygasła";
+"result.expired_detail" = "Rozpocznij płatność jeszcze raz.";
+"result.refunded_title" = "Płatność została zwrócona";
+"result.failure_title" = "Płatność nieudana";
+"result.declined_detail" = "Sprawdź powód w aplikacji bankowej i spróbuj ponownie.";
+"result.unknown_title" = "Nie możemy potwierdzić płatności";
+"result.unknown_detail" = "Nie wiemy, czy płatność została rozpoczęta. Nie płać ponownie, zanim sklep nie potwierdzi statusu zamówienia.";
+"result.cancelled_title" = "Płatność anulowana";
+"result.cancelled_detail" = "Płatność nie została rozpoczęta.";
+
+/* Errors */
+"error.no_internet" = "Brak połączenia z internetem.";
+"error.timeout" = "Przekroczono czas połączenia. Spróbuj ponownie.";
+"error.rate_limited" = "Zbyt wiele prób. Odczekaj chwilę.";
+"error.missing_payer_ip" = "Nie udało się przygotować płatności. Brakuje konfiguracji po stronie sklepu.";
+"error.missing_country" = "Nie udało się przygotować płatności. Brakuje konfiguracji kraju po stronie sklepu.";
+"error.transaction_not_found" = "Nie znaleziono transakcji.";
+"error.unavailable" = "Płatności są chwilowo niedostępne. Spróbuj ponownie za chwilę.";
+"error.blik_rejected" = "Kilkakrotnie podano błędny kod BLIK. Rozpocznij płatność jeszcze raz.";
+"error.generic" = "Coś poszło nie tak. Spróbuj ponownie.";
+
+/* Buttons */
+"action.pay" = "Zapłać";
+"action.pay_amount" = "Zapłać %@";
+"action.cancel" = "Anuluj";
+"action.close" = "Zamknij";
+"action.done" = "Gotowe";
+"action.try_again" = "Spróbuj ponownie";
+
+/* Accessibility */
+"a11y.simpay" = "SimPay";
+"a11y.recommended" = "Polecana";
+"a11y.unavailable" = "Niedostępna";

@@ -1,0 +1,38 @@
+{
+  "id": "channels_not_found",
+  "title": "Channels: HTTP 404 means channels_failed, never transaction_not_found",
+  "since": "1.0.0",
+  "covers": [
+    "results"
+  ],
+  "api": {
+    "channels": [
+      {
+        "status": 404
+      }
+    ]
+  },
+  "steps": [
+    {
+      "action": "load_channels",
+      "accepted": false
+    },
+    {
+      "action": "close"
+    }
+  ],
+  "expect": {
+    "result": {
+      "type": "failed",
+      "error": {
+        "code": "channels_failed"
+      }
+    },
+    "requests": {
+      "create_transaction": 0,
+      "submit_blik_code": 0,
+      "channels": 1
+    }
+  },
+  "androidToday": "transaction_not_found (global 404 mapping)."
+}

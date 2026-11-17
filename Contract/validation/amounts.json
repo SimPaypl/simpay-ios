@@ -1,0 +1,39 @@
+{
+  "$comment": "Amount representation. Amounts cross every boundary as decimal strings (grammar below) and are kept as exact decimals (BigDecimal / Decimal), never binary floating point. 'serialization': the JSON number literal written as 'amount' in POST /transactions. 'display': text shown to the payer; locale output differs between platforms (spaces, symbols), so only the visible digits are part of the contract.",
+  "grammar": "^(0|[1-9][0-9]*)(\\.[0-9]{1,2})?$",
+  "parsing": [
+    { "text": "49.99", "valid": true },
+    { "text": "1", "valid": true },
+    { "text": "0", "valid": true, "note": "Parses; rejected later by the minimum amount rule." },
+    { "text": "100.5", "valid": true },
+    { "text": "100.50", "valid": true },
+    { "text": "12abc", "valid": false },
+    { "text": "1,5", "valid": false },
+    { "text": "1e2", "valid": false },
+    { "text": "+1", "valid": false },
+    { "text": "-1", "valid": false },
+    { "text": ".5", "valid": false },
+    { "text": "5.", "valid": false },
+    { "text": "007", "valid": false },
+    { "text": "1.234", "valid": false },
+    { "text": "", "valid": false },
+    { "text": " 1", "valid": false },
+    { "text": "NaN", "valid": false },
+    { "text": "١٢", "valid": false, "note": "Non-ASCII digits are refused." }
+  ],
+  "serialization": [
+    { "amount": "49.99", "json": "49.99" },
+    { "amount": "1", "json": "1" },
+    { "amount": "100.5", "json": "100.5" },
+    { "amount": "100.50", "json": "100.5", "note": "Trailing zeros are not significant. Android writes BigDecimal('100.50') as 100.50; both are the same JSON number. To be confirmed with SimPay that the API compares numerically." },
+    { "amount": "0.1", "json": "0.1", "note": "Must never become 0.1000000000000000055511151231257827 (binary floating point)." },
+    { "amount": "999999.99", "json": "999999.99" }
+  ],
+  "display": [
+    { "amount": "149.99", "currency": "PLN", "language": "pl", "mustContain": ["149,99", "zł"] },
+    { "amount": "1234.5", "currency": "EUR", "language": "en", "mustContain": ["1,234.50", "€"] },
+    { "amount": "10", "currency": "PLN", "language": "en", "mustContain": ["10.00"] },
+    { "amount": "10.125", "currency": "PLN", "language": "en", "mustContain": ["10.125"], "note": "A digit the amount carries is never hidden by rounding." },
+    { "amount": "10", "currency": "XYZ1", "language": "en", "mustContain": ["10", "XYZ1"], "note": "Unknown currency codes are shown verbatim." }
+  ]
+}

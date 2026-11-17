@@ -1,0 +1,82 @@
+{
+  "id": "cancel_after_transaction_created",
+  "title": "Cancel: closing after creation is pending with the id, never cancelled",
+  "since": "1.0.0",
+  "covers": [
+    "cancellation",
+    "results"
+  ],
+  "api": {
+    "channels": [
+      {
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [
+            {
+              "id": "blik-level0",
+              "name": "BLIK Level 0",
+              "type": "blik",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "20000.00"
+              }
+            },
+            {
+              "id": "mbank",
+              "name": "mBank",
+              "type": "transfer",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "50000.00"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "create_transaction": [
+      {
+        "status": 201,
+        "json": {
+          "success": true,
+          "data": {
+            "transactionId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301",
+            "redirectUrl": "https://secure.simpay.pl/pay/abc"
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "action": "load_channels"
+    },
+    {
+      "action": "select_channel",
+      "channelId": "mbank"
+    },
+    {
+      "action": "close"
+    }
+  ],
+  "expect": {
+    "result": {
+      "type": "pending",
+      "transactionId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301",
+      "pendingReason": "status_unavailable"
+    },
+    "requests": {
+      "create_transaction": 1,
+      "submit_blik_code": 0
+    },
+    "transactionCreatedEvents": 1
+  },
+  "androidToday": "pending(id, null)."
+}

@@ -1,0 +1,75 @@
+{
+  "id": "create_not_connected_is_safe_failure",
+  "title": "Creation: offline before sending is a definite failure without a transaction",
+  "since": "1.0.0",
+  "covers": [
+    "results",
+    "no_unsafe_post_retry"
+  ],
+  "api": {
+    "channels": [
+      {
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [
+            {
+              "id": "blik-level0",
+              "name": "BLIK Level 0",
+              "type": "blik",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "20000.00"
+              }
+            },
+            {
+              "id": "mbank",
+              "name": "mBank",
+              "type": "transfer",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "50000.00"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "create_transaction": [
+      {
+        "transportFailure": "not_connected"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "action": "load_channels"
+    },
+    {
+      "action": "select_channel",
+      "channelId": "mbank"
+    },
+    {
+      "action": "close"
+    }
+  ],
+  "expect": {
+    "result": {
+      "type": "failed",
+      "error": {
+        "code": "no_internet"
+      }
+    },
+    "requests": {
+      "create_transaction": 1,
+      "submit_blik_code": 0
+    },
+    "transactionCreatedEvents": 0
+  }
+}

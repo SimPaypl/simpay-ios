@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>pl</string>
+	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>pl.simpay.checkout.demo.return</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>simpay-demo</string>
+			</array>
+		</dict>
+	</array>
+	<key>SimPayDebugAPIKey</key>
+	<string>$(SIMPAY_DEBUG_API_KEY)</string>
+	<key>SimPayDebugPayerIP</key>
+	<string>$(SIMPAY_DEBUG_PAYER_IP)</string>
+	<key>SimPayDebugServiceID</key>
+	<string>$(SIMPAY_DEBUG_SERVICE_ID)</string>
+</dict>
+</plist>

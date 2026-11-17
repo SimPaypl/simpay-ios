@@ -1,0 +1,9 @@
+// Copy to `SimPayDebug.local.xcconfig` (git-ignored) to enable the API KEY mode of the
+// demo in Debug builds. NEVER commit the copy and never use a production key that
+// handles real money: anyone with the Debug app can extract it.
+//
+// Note: `//` starts a comment in .xcconfig files, so values must not contain it.
+SIMPAY_DEBUG_SERVICE_ID = a1b2c3d4
+SIMPAY_DEBUG_API_KEY = paste-your-test-api-key-here
+// Public IP of the test device. Used when the session response carries no payer IP.
+SIMPAY_DEBUG_PAYER_IP = 203.0.113.10

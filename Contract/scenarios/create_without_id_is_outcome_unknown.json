@@ -1,0 +1,76 @@
+{
+  "id": "create_without_id_is_outcome_unknown",
+  "title": "Creation: 2xx without a transaction id is outcome_unknown",
+  "since": "1.0.0",
+  "covers": [
+    "outcome_unknown",
+    "no_unsafe_post_retry"
+  ],
+  "api": {
+    "channels": [
+      {
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [
+            {
+              "id": "blik-level0",
+              "name": "BLIK Level 0",
+              "type": "blik",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "20000.00"
+              }
+            },
+            {
+              "id": "mbank",
+              "name": "mBank",
+              "type": "transfer",
+              "currencies": [
+                "PLN"
+              ],
+              "amount": {
+                "min": "1.00",
+                "max": "50000.00"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "create_transaction": [
+      {
+        "status": 201,
+        "json": {
+          "success": true,
+          "data": {}
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "action": "load_channels"
+    },
+    {
+      "action": "select_channel",
+      "channelId": "mbank"
+    }
+  ],
+  "expect": {
+    "result": {
+      "type": "outcome_unknown",
+      "error": {
+        "code": "outcome_unknown"
+      }
+    },
+    "requests": {
+      "create_transaction": 1,
+      "submit_blik_code": 0
+    }
+  },
+  "androidToday": "failed(invalid_response, retryable=true) (P0)."
+}
